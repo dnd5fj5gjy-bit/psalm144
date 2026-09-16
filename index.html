@@ -22,7 +22,14 @@
 
   .wordmark{position:absolute;left:0;right:0;bottom:var(--foot);text-align:center;
     font-size:clamp(13px,1.6vw,18px);letter-spacing:.42em;text-transform:uppercase;
-    font-weight:600;color:var(--paper);text-shadow:0 2px 18px rgba(0,0,0,.75)}
+    font-weight:600;color:var(--paper);text-shadow:0 2px 18px rgba(0,0,0,.75);
+    text-indent:.42em}   /* cancels the trailing letter-space so 144 sits truly centred */
+
+  /* the verse the company is named after - small, quiet, below the contact line */
+  .verse{max-width:46ch;margin:0 auto;padding:0 clamp(20px,4vw,48px) clamp(44px,7vw,80px);
+    text-align:center;color:var(--muted);opacity:.42}
+  .verse .ref{margin:0 0 .75em;font-size:10px;letter-spacing:.34em;text-transform:uppercase}
+  .verse .words{margin:0;font-size:12px;line-height:1.75;font-style:italic;letter-spacing:.02em}
 
   .contact{padding:clamp(64px,10vw,140px) clamp(20px,4vw,48px);text-align:center;
     border-top:1px solid var(--line)}
@@ -37,12 +44,17 @@
     <video autoplay muted loop playsinline preload="auto" src="hero.mp4"></video>
     <div class="scrim"></div>
     <img class="mark" src="logo-white.png" alt="Psalm 144">
-    <div class="wordmark">Psalm 144</div>
+    <div class="wordmark">144</div>
   </div>
 
   <section class="contact">
     <a href="mailto:Jesse@psalm144.co.uk">Contact</a>
   </section>
+
+  <footer class="verse">
+    <p class="ref">Psalm 144:1</p>
+    <p class="words">Blessed be the LORD, my rock, who trains my hands for war, and my fingers for battle.</p>
+  </footer>
 </body>
 </html>
 
