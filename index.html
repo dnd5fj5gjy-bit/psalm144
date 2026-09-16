@@ -6,8 +6,9 @@
 <title>Psalm 144</title>
 <style>
   :root{ --ink:#0d0f10; --paper:#f4f2ee; --muted:#8b8f93; --line:#23282b;
-         --foot:clamp(24px,4vh,48px); }
+         --foot:calc(clamp(24px,4vh,48px) + env(safe-area-inset-bottom)); }
   *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
   html,body{margin:0;padding:0;background:var(--ink);color:var(--paper);
     font-family:"Helvetica Neue",Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased}
   .hero{position:relative;height:100svh;min-height:520px;overflow:hidden}
@@ -16,14 +17,14 @@
      linear-gradient(180deg,rgba(13,15,16,.34) 0%,rgba(13,15,16,.10) 40%,rgba(13,15,16,.62) 100%)}
 
   /* logo: sits above the wordmark from the moment the page loads */
-  .mark{position:absolute;left:50%;bottom:calc(var(--foot) + 34px);
-    width:clamp(56px,7vw,86px);pointer-events:none;transform:translateX(-50%);
+  .mark{position:absolute;left:50%;bottom:calc(var(--foot) + clamp(46px,5.4vw,64px));
+    width:clamp(74px,8.4vw,104px);pointer-events:none;transform:translateX(-50%);
     filter:drop-shadow(0 3px 20px rgba(0,0,0,.65))}
 
   .wordmark{position:absolute;left:0;right:0;bottom:var(--foot);text-align:center;
-    font-size:clamp(13px,1.6vw,18px);letter-spacing:.42em;text-transform:uppercase;
+    font-size:clamp(26px,3.4vw,40px);letter-spacing:.62em;text-transform:uppercase;
     font-weight:600;color:var(--paper);text-shadow:0 2px 18px rgba(0,0,0,.75);
-    text-indent:.42em}   /* cancels the trailing letter-space so 144 sits truly centred */
+    text-indent:.62em}   /* text-indent = letter-spacing, so the trailing space does not push it left */
 
   /* the verse the company is named after - small, quiet, below the contact line */
   .verse{max-width:46ch;margin:0 auto;padding:0 clamp(20px,4vw,48px) clamp(44px,7vw,80px);
@@ -33,15 +34,21 @@
 
   .contact{padding:clamp(64px,10vw,140px) clamp(20px,4vw,48px);text-align:center;
     border-top:1px solid var(--line)}
-  .contact a{color:var(--paper);text-decoration:none;border-bottom:1px solid #3a4145;
-    font-size:clamp(16px,2vw,22px);letter-spacing:.24em;text-transform:uppercase;
-    font-weight:500;padding-bottom:.35em}
+  .contact a{display:inline-block;color:var(--paper);text-decoration:none;
+    border-bottom:1px solid #3a4145;font-size:clamp(16px,2vw,22px);letter-spacing:.24em;
+    text-transform:uppercase;font-weight:500;padding:.6em .4em .35em;min-height:44px}
+
+  @media (max-width:520px){
+    .wordmark{letter-spacing:.5em;text-indent:.5em}   /* .62em overflows a narrow screen */
+    .verse .words{font-size:11.5px}
+  }
+  @media (prefers-reduced-motion:reduce){ .hero video{display:none} }
   .contact a:hover{border-bottom-color:var(--paper)}
 </style>
 </head>
 <body>
   <div class="hero">
-    <video autoplay muted loop playsinline preload="auto" src="hero.mp4"></video>
+    <video autoplay muted loop playsinline preload="metadata" src="hero.mp4"></video>
     <div class="scrim"></div>
     <img class="mark" src="logo-white.png" alt="Psalm 144">
     <div class="wordmark">144</div>
