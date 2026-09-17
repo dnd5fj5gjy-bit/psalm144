@@ -4,6 +4,9 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>144</title>
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
+<meta name="theme-color" content="#0d0f10">
 <style>
   :root{ --ink:#0d0f10; --paper:#f4f2ee; --muted:#8b8f93; --line:#23282b;
          --foot:calc(clamp(24px,4vh,48px) + env(safe-area-inset-bottom)); }
@@ -22,9 +25,15 @@
     filter:drop-shadow(0 3px 20px rgba(0,0,0,.65))}
 
   .wordmark{position:absolute;left:0;right:0;bottom:var(--foot);text-align:center;
-    font-size:clamp(26px,3.4vw,40px);letter-spacing:.62em;text-transform:uppercase;
-    font-weight:600;color:var(--paper);text-shadow:0 2px 18px rgba(0,0,0,.75);
-    text-indent:.62em}   /* text-indent = letter-spacing, so the trailing space does not push it left */
+    font-size:clamp(26px,3.4vw,40px);letter-spacing:0;text-transform:uppercase;
+    font-weight:600;color:var(--paper);text-shadow:0 2px 18px rgba(0,0,0,.75)}
+  /* The gap between the numerals is a MARGIN on each glyph, not letter-spacing on the container,
+     and the last glyph carries none. Why it matters: letter-spacing puts its space INSIDE each
+     glyph's own box as trailing air, so the box is one whole space wider than the visible ink and
+     centring the box leaves the ink half a space (12.4px at 40px type) LEFT of true centre.
+     Measured 17 Sept 2026 against the logo: that was exactly the asymmetry Jesse could see.
+     With margins the box equals the ink, so centring is honest and measure() below reads true
+     glyph centres for the landing. Do not reintroduce letter-spacing here. */
 
   /* the verse the company is named after - small, quiet, below the contact line */
   .verse{max-width:46ch;margin:0 auto;padding:0 clamp(20px,4vw,48px) clamp(44px,7vw,80px);
@@ -39,10 +48,61 @@
     text-transform:uppercase;font-weight:500;padding:.6em .4em .35em;min-height:44px}
 
   @media (max-width:520px){
-    .wordmark{letter-spacing:.5em;text-indent:.5em}   /* .62em overflows a narrow screen */
+    .wordmark .g{margin-right:.5em}   /* .62em overflows a narrow screen */
+    .wordmark .g:last-child{margin-right:0}
     .verse .words{font-size:11.5px}
   }
   @media (prefers-reduced-motion:reduce){ .hero video{display:none} }
+
+  /* ---- what we do: a black band under the hero. 17 Sept 2026 ---- */
+  .band{background:#000;border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    padding:clamp(56px,8vw,112px) clamp(20px,4vw,48px)}
+  .band .inner{max-width:920px;margin:0 auto;text-align:center}
+  .band h1{margin:0;font-size:clamp(17px,2.3vw,26px);letter-spacing:.2em;text-transform:uppercase;
+    font-weight:500;line-height:1.5;color:var(--paper)}
+  .band .blurb{margin:clamp(18px,2.4vw,28px) auto 0;max-width:60ch;color:var(--muted);
+    font-size:clamp(13px,1.5vw,15px);line-height:1.8}
+
+  .aspects{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);
+    border-bottom:1px solid var(--line)}
+  .aspect{background:var(--ink);padding:clamp(34px,5vw,64px) clamp(18px,2.6vw,34px)}
+  .aspect .n{margin:0 0 1.1em;font-size:10px;letter-spacing:.34em;text-transform:uppercase;
+    color:var(--muted);opacity:.7}
+  .aspect h2{margin:0 0 .7em;font-size:clamp(14px,1.7vw,18px);letter-spacing:.1em;
+    text-transform:uppercase;font-weight:500;line-height:1.45}
+  .aspect p{margin:0;color:var(--muted);font-size:clamp(12.5px,1.4vw,14px);line-height:1.75}
+
+  /* full-screen film, autoplaying, with a line over the middle. 17 Sept 2026 */
+  .film{position:relative;height:100svh;min-height:520px;overflow:hidden;
+    border-top:1px solid var(--line)}
+  .film video{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .film .scrim{position:absolute;inset:0;background:
+     linear-gradient(180deg,rgba(13,15,16,.30) 0%,rgba(13,15,16,.48) 50%,rgba(13,15,16,.30) 100%)}
+  .film .over{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+    padding:0 clamp(20px,5vw,64px);text-align:center;pointer-events:none}
+  .film .over p{margin:0;max-width:24ch;font-size:clamp(20px,3.4vw,44px);letter-spacing:.14em;
+    line-height:1.22;text-transform:uppercase;font-weight:500;
+    text-shadow:0 2px 24px rgba(0,0,0,.8)}
+  /* three stacked lines, his call 17 Sept. Each phrase is its own block so the break is fixed
+     rather than left to wrapping, which would move with the viewport. Full stops dropped: the
+     line break does that work now and trailing dots on stacked display type read as debris. */
+  .film .over p span{display:block}
+  .film .over p span+span{margin-top:.12em}
+
+  @media (max-width:760px){
+    .aspects{grid-template-columns:1fr}
+    .band h1{letter-spacing:.14em}
+  }
+
+  /* each numeral is its own element so it can fly in on load */
+  .wordmark .g{display:inline-block;will-change:transform;margin-right:.62em}
+  .wordmark .g:last-child{margin-right:0}
+  .wordmark.flying .g{opacity:0}
+  @media (prefers-reduced-motion:reduce){ .wordmark.flying .g{opacity:1} }
+
+  #dogfight{position:absolute;inset:0;pointer-events:none;z-index:2}
+  .wordmark{z-index:3}
+  .mark{z-index:3}
   .contact a:hover{border-bottom-color:var(--paper)}
 </style>
 </head>
@@ -50,9 +110,47 @@
   <div class="hero">
     <video autoplay muted loop playsinline preload="metadata" src="hero.mp4"></video>
     <div class="scrim"></div>
+    <canvas id="dogfight"></canvas>
     <img class="mark" src="logo-white.png" alt="144">
-    <div class="wordmark">144</div>
+    <div class="wordmark" id="wm" aria-label="144"><span class="g">1</span><span class="g">4</span><span class="g">4</span></div>
   </div>
+
+
+  <section class="band">
+    <div class="inner">
+      <h1>Endurance. Autonomy. Effect.</h1>
+      <p class="blurb">144 builds systems for environments where power, reach and decision time are
+         all constrained. We work across land, sea, air and orbit, and we start at the power source.
+         What we are building is not yet public.</p>
+    </div>
+  </section>
+
+  <section class="aspects">
+    <div class="aspect">
+      <p class="n">01</p>
+      <h2>Endurance</h2>
+      <p>Power that outlasts the mission plan. Where resupply is hard and charging is not an
+         option, endurance decides what is possible.</p>
+    </div>
+    <div class="aspect">
+      <p class="n">02</p>
+      <h2>Autonomy</h2>
+      <p>Systems that work with less: less signal, less supervision, less certainty. From what a
+         soldier carries to what stays in orbit.</p>
+    </div>
+    <div class="aspect">
+      <p class="n">03</p>
+      <h2>Effect</h2>
+      <p>The ability to act at the moment and the range that matter, and to deny the same to
+         someone else.</p>
+    </div>
+  </section>
+
+  <section class="film">
+    <video autoplay muted loop playsinline preload="metadata" poster="film-poster.jpg" src="film.mp4"></video>
+    <div class="scrim"></div>
+    <div class="over"><p><span>Off-grid</span><span>Under the radar</span><span>For longer</span></p></div>
+  </section>
 
   <section class="contact">
     <a href="mailto:Jesse@psalm144.co.uk">Contact</a>
@@ -62,6 +160,230 @@
     <p class="ref">Psalm 144:1</p>
     <p class="words">Blessed be the LORD, my rock, who trains my hands for war, and my fingers for battle.</p>
   </footer>
+
+
+
+<script>
+/* 17 Sept 2026, third brief. The 1, the 4 and the 4 are a flight of three friendlies. Nine white
+   top-down enemy jets are on screen; each numeral hunts and kills THREE of them with guns and
+   heat-seeking missiles, and when the last one dies the three come in and LAND under the logo.
+
+   Rules taken literally:
+     - nobody leaves the screen: every agent is steered inward near the edge and hard-clamped
+     - missiles actually home, and when one misses it explodes on screen
+     - an enemy that is hit explodes and disappears
+     - the landing is a run-in from the left at zero bank, not a snap back to position
+   Glyphs stay DOM at rest size, so the resting layout is the stylesheet's and the script ends by
+   clearing its own transforms. */
+(function(){
+  var wm=document.getElementById('wm'), hero=document.querySelector('.hero'), cv=document.getElementById('dogfight');
+  if(!wm||!hero||!cv) return;
+  var gs=[].slice.call(wm.querySelectorAll('.g'));
+  if(gs.length!==3) return;
+  if(window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  var ctx=cv.getContext('2d'), W=0,H=0,home=[],FR=[],EN=[],shots=[],booms=[];
+  var MAX_MS=32000, LAND_MS=2600, t0=null, mode='fight', landStart=0;
+
+  function size(){ var r=hero.getBoundingClientRect(); W=r.width; H=r.height;
+    var d=Math.min(window.devicePixelRatio||1,2);
+    cv.width=W*d; cv.height=H*d; cv.style.width=W+'px'; cv.style.height=H+'px'; ctx.setTransform(d,0,0,d,0,0); }
+  function measure(){ var hr=hero.getBoundingClientRect();
+    home=gs.map(function(g){ var r=g.getBoundingClientRect();
+      return {x:r.left-hr.left+r.width/2, y:r.top-hr.top+r.height/2}; }); }
+  size(); measure();
+
+  /* 17 Sept: absolute edge margins swamped a 390px screen - the middle was only 210px wide, so
+     edge steering overrode pursuit and mobile took 31s against desktop's 13s. Everything spatial
+     is now proportional to the viewport. */
+  var S=Math.max(0.42, Math.min(1, Math.min(W/1440, H/900)));
+  var M=46*S, box={x0:M,x1:W-M,y0:M*0.7,y1:H*0.60};
+  var EDGE_X=Math.min(90, W*0.09), EDGE_Y=Math.min(70, H*0.08);
+  function clamp(o){ o.x=Math.max(box.x0,Math.min(box.x1,o.x)); o.y=Math.max(box.y0,Math.min(box.y1,o.y)); }
+  function wrap(d){ while(d>Math.PI)d-=6.283185; while(d<-Math.PI)d+=6.283185; return d; }
+  function boom(x,y,big){ booms.push({x:x,y:y,max:big?170:56,life:big?0.8:0.34,t:0,big:big}); }
+  function edgeSteer(o){
+    if(o.x<box.x0+EDGE_X) return 0;
+    if(o.x>box.x1-EDGE_X) return Math.PI;
+    if(o.y<box.y0+EDGE_Y) return Math.PI/2;
+    if(o.y>box.y1-EDGE_Y) return -Math.PI/2;
+    return null;
+  }
+
+  /* 17 Sept, his call: THREE enemies, one kill each (was nine, then six). Kept as N_EN/PER so a
+     change of mind is a number and not a rewrite - the 9/3 version had the counts hardcoded in
+     four separate places. */
+  var N_EN=3, PER=N_EN/3, COLS=3, ROWS=Math.ceil(N_EN/COLS);
+  for(var e=0;e<N_EN;e++){
+    /* With ROWS===1 the row formula puts every enemy at one altitude, which reads as a line
+       abreast rather than a dogfight, so a single row is spread vertically by column instead. */
+    var fy = ROWS===1 ? (0.28 + 0.44*((e%COLS)/Math.max(1,COLS-1)))
+                      : ((Math.floor(e/COLS)+0.5)/ROWS);
+    EN.push({x:box.x0+ (W-2*M)*((e%COLS)+0.5)/COLS + (Math.random()-0.5)*90,
+             y:box.y0+ (box.y1-box.y0)*fy + (Math.random()-0.5)*50,
+             a:Math.random()*6.283, v:(250+Math.random()*110)*S, alive:true, hp:2, ihit:0,
+             turn:3.0+Math.random()*1.0});
+  }
+  /* three friendlies, PER kills each: friendly i owns enemies i*PER .. i*PER+PER-1 */
+  FR=gs.map(function(g,i){
+    var st=[{x:box.x0+10,y:box.y1-20,a:-0.6},{x:box.x1-10,y:box.y1-40,a:Math.PI+0.6},{x:W*0.5,y:box.y1-10,a:-Math.PI/2}][i];
+    return {g:g,i:i,x:st.x,y:st.y,a:st.a,v:470*S,bank:0,kills:0,
+            queue:Array.from({length:PER},function(_,n){return i*PER+n;}), gun:1.6+i*0.5, burst:0, mis:4.2+i*1.3, land:null};
+    /* First missiles deliberately late (4.2s, 5.5s, 6.8s). With only three jets an early
+       outright missile kill ended the whole fight at ~3s; holding them back makes the opening
+       guns and manoeuvre, which is what he asked a dogfight to look like. */
+  });
+  function target(f){ while(f.queue.length && !EN[f.queue[0]].alive) f.queue.shift(); return f.queue.length?EN[f.queue[0]]:null; }
+
+  function jet(x,y,a){
+    ctx.save(); ctx.translate(x,y); ctx.rotate(a);
+    ctx.fillStyle='rgba(255,255,255,.93)';
+    ctx.beginPath();
+    ctx.moveTo(16,0); ctx.lineTo(2,4); ctx.lineTo(-6,16); ctx.lineTo(-9,16);
+    ctx.lineTo(-5,4); ctx.lineTo(-13,3); ctx.lineTo(-16,9); ctx.lineTo(-18,9);
+    ctx.lineTo(-16,1); ctx.lineTo(-16,-1); ctx.lineTo(-18,-9); ctx.lineTo(-16,-9);
+    ctx.lineTo(-13,-3); ctx.lineTo(-5,-4); ctx.lineTo(-9,-16); ctx.lineTo(-6,-16); ctx.lineTo(2,-4);
+    ctx.closePath(); ctx.fill(); ctx.restore();
+  }
+
+  function frame(ts){
+    if(t0===null) t0=ts;
+    var el=ts-t0, dt=1/60;
+    ctx.clearRect(0,0,W,H);
+    var aliveCount=EN.filter(function(o){return o.alive;}).length;
+
+    if(mode==='fight' && (aliveCount===0 || el>MAX_MS)){
+      /* If the cap is ever hit, any survivor is destroyed here and credited. Without this the
+         numerals came in to land while live jets kept circling, which breaks the sequence he
+         asked for: everything destroyed FIRST, then they land. */
+      if(el>MAX_MS){ EN.forEach(function(o,k){ if(!o.alive) return; o.alive=false; boom(o.x,o.y,true);
+        FR.forEach(function(f){ var qi=f.queue.indexOf(k); if(qi>=0){ f.kills++; f.queue.splice(qi,1); } }); }); }
+      mode='land'; landStart=ts; shots.length=0;
+      FR.forEach(function(f){ f.land={x0:f.x,y0:f.y,a0:f.a+f.bank}; }); }
+
+    /* enemies evade and hold station */
+    EN.forEach(function(o){
+      if(!o.alive) return;
+      if(o.ihit>0) o.ihit-=dt;   /* see the gun-hit block: one hit per burst, not three */
+      var want=edgeSteer(o);
+      if(want===null){
+        var near=null,nd=1e9;
+        FR.forEach(function(f){ var d=Math.hypot(f.x-o.x,f.y-o.y); if(d<nd){nd=d;near=f;} });
+        var inc=null, id=1e9;
+        shots.forEach(function(sh){ if(sh.trk!==undefined && EN[sh.trk]===o){ var dd=Math.hypot(sh.x-o.x,sh.y-o.y); if(dd<id){id=dd;inc=sh;} } });
+        if(inc && id<230) want = Math.atan2(o.y-inc.y, o.x-inc.x) + 1.15;      /* break across the seeker */
+        else if(near && nd<310) want = Math.atan2(o.y-near.y,o.x-near.x) + Math.sin(ts/260+o.v)*0.9;
+        else want = o.a + Math.sin(ts/380+o.v)*1.1;
+      }
+      var tu=wrap(want-o.a), r=o.turn*dt;
+      o.a+=Math.max(-r,Math.min(r,tu));
+      o.x+=Math.cos(o.a)*o.v*dt; o.y+=Math.sin(o.a)*o.v*dt; clamp(o);
+      jet(o.x,o.y,o.a);
+    });
+
+    FR.forEach(function(f){
+      if(mode==='land'){
+        var k=Math.min(1,(ts-landStart-f.i*450)/LAND_MS); if(k<0) k=0;
+        var e2=1-Math.pow(1-k,3), h=home[f.i], L=f.land;
+        /* run in from the left of the resting slot, levelling as it arrives */
+        var ax=h.x-300*S+f.i*40*S, ay=h.y;
+        var px, py;
+        if(e2<0.6){ var q=e2/0.6; px=L.x0+(ax-L.x0)*q; py=L.y0+(ay-L.y0)*q; }
+        else { var q2=(e2-0.6)/0.4; px=ax+(h.x-ax)*q2; py=ay+(h.y-ay)*q2; }
+        var rot=L.a0*(1-e2);
+        f.g.style.transform='translate('+(px-h.x)+'px,'+(py-h.y)+'px) rotate('+rot+'rad)';
+        if(k>=1) f.done=true;
+        return;
+      }
+      var t=target(f);
+      var want=edgeSteer(f);
+      if(want===null){
+        if(t){ var lead=Math.min(0.5, Math.hypot(t.x-f.x,t.y-f.y)/(f.v*1.6));
+               want=Math.atan2(t.y+Math.sin(t.a)*t.v*lead-f.y, t.x+Math.cos(t.a)*t.v*lead-f.x); }
+        else want=f.a+Math.sin(ts/700+f.i)*0.6;
+      }
+      var tu=wrap(want-f.a), r=3.8*dt, ap=Math.max(-r,Math.min(r,tu));
+      f.a+=ap; f.bank=Math.max(-0.8,Math.min(0.8,tu*1.1));
+      var hard=Math.abs(ap)/r; f.v=Math.max(330*S,Math.min(560*S,f.v+(hard>0.75?-420:300)*dt*S));
+      f.x+=Math.cos(f.a)*f.v*dt; f.y+=Math.sin(f.a)*f.v*dt; clamp(f);
+
+      if(t){
+        var dx=t.x-f.x, dy=t.y-f.y, d=Math.hypot(dx,dy), aim=Math.abs(wrap(Math.atan2(dy,dx)-f.a));
+        f.gun-=dt;
+        if(f.burst>0){ f.burst-=dt; if(f.burst%0.055<dt) shots.push({x:f.x,y:f.y,a:f.a+(Math.random()-0.5)*0.16,v:1250*S,life:0.5,gun:true,own:f.i}); }
+        else if(f.gun<=0 && aim<0.055 && d<190*S){ f.burst=0.30; f.gun=2.4+Math.random()*1.6; }
+        f.mis-=dt;
+        if(f.mis<=0 && d>130*S && d<620*S){ shots.push({x:f.x,y:f.y,a:f.a,v:600*S,life:2.1,trk:f.queue[0],turn:1.55,own:f.i,v2:600*S}); f.mis=4.4+Math.random()*2.6; }
+      }
+      f.g.style.transform='translate('+(f.x-home[f.i].x)+'px,'+(f.y-home[f.i].y)+'px) rotate('+(f.a+f.bank)+'rad)';
+    });
+
+    for(var i=shots.length-1;i>=0;i--){
+      var s=shots[i]; s.life-=dt;
+      if(s.trk!==undefined){
+        var tf=EN[s.trk];
+        if(!tf || !tf.alive){ boom(s.x,s.y,false); shots.splice(i,1); continue; }
+        var wa=Math.atan2(tf.y-s.y,tf.x-s.x), tu2=wrap(wa-s.a), rr=s.turn*dt;
+        s.a+=Math.max(-rr,Math.min(rr,tu2));
+        if(Math.hypot(tf.x-s.x,tf.y-s.y)<24*Math.max(S,0.7)){
+          tf.alive=false; boom(tf.x,tf.y,true);
+          var own=FR[s.own]; own.kills++; if(own.queue[0]===s.trk) own.queue.shift();
+          shots.splice(i,1); continue;
+        }
+      } else {
+        /* a round can only kill a jet assigned to the aircraft that fired it, so the split
+           stays three each - stray hits used to credit whoever was shooting and it came out 5/3/1 */
+        var own4=FR[s.own];
+        for(var qi2=0;qi2<own4.queue.length;qi2++){ var k2=own4.queue[qi2], o2=EN[k2];
+          if(o2 && o2.alive && Math.hypot(o2.x-s.x,o2.y-s.y)<7/Math.max(S,0.5)){
+            /* 17 Sept: cutting to three enemies collapsed the fight to under two seconds because
+               each numeral killed on its first pass. A jet now takes TWO gun hits, so the kill
+               is earned and the chase survives the smaller count. One BURST can only score one
+               hit (ihit), or one 0.30s burst landed every hit and the fight ended at 2s.
+               Three hits plus that limit overshot to 25.8s, near the cap, hence two.
+               A missile still kills outright -
+               a big explosion followed by the jet flying on would read as a bug. */
+            if(o2.ihit>0){ s.life=-1; break; }   /* already hit this burst */
+            o2.hp-=1; o2.ihit=0.7; boom(s.x,s.y,false);
+            if(o2.hp<=0){ o2.alive=false; boom(o2.x,o2.y,true);
+                          own4.kills++; own4.queue.splice(qi2,1); }
+            s.life=-1; break; }
+        }
+      }
+      s.x+=Math.cos(s.a)*s.v*dt; s.y+=Math.sin(s.a)*s.v*dt;
+      if(s.life<=0){ boom(s.x,s.y,s.trk!==undefined); shots.splice(i,1); continue; }
+      if(s.gun){ ctx.globalAlpha=.95; ctx.strokeStyle='#fff6e6'; ctx.lineWidth=2.4;
+        ctx.beginPath(); ctx.moveTo(s.x,s.y); ctx.lineTo(s.x-Math.cos(s.a)*24,s.y-Math.sin(s.a)*24); ctx.stroke(); }
+      else { ctx.globalAlpha=.30; ctx.strokeStyle='#ffd9a8'; ctx.lineWidth=3;
+        ctx.beginPath(); ctx.moveTo(s.x-Math.cos(s.a)*20,s.y-Math.sin(s.a)*20);
+        ctx.lineTo(s.x-Math.cos(s.a)*130,s.y-Math.sin(s.a)*130); ctx.stroke();
+        ctx.globalAlpha=1; ctx.strokeStyle='#fff1dd'; ctx.lineWidth=4.4;
+        ctx.beginPath(); ctx.moveTo(s.x,s.y); ctx.lineTo(s.x-Math.cos(s.a)*22,s.y-Math.sin(s.a)*22); ctx.stroke(); }
+    }
+
+    for(var b=booms.length-1;b>=0;b--){
+      var o4=booms[b]; o4.t+=dt; var pr=o4.t/o4.life;
+      if(pr>=1){ booms.splice(b,1); continue; }
+      if(o4.big){ ctx.globalAlpha=(1-pr)*.9; ctx.fillStyle='#fff4e2';
+        ctx.beginPath(); ctx.arc(o4.x,o4.y,(o4.max*.3)*(1-pr)+4,0,6.283); ctx.fill(); }
+      ctx.globalAlpha=(1-pr)*.9; ctx.strokeStyle='#ffd2a0'; ctx.lineWidth=(o4.big?5:2.6)*(1-pr)+.8;
+      ctx.beginPath(); ctx.arc(o4.x,o4.y,o4.max*pr,0,6.283); ctx.stroke();
+    }
+    ctx.globalAlpha=1;
+
+    if(mode==='land' && FR.every(function(f){return f.done;}) && booms.length===0){
+      gs.forEach(function(g){ g.style.transform=''; g.style.textShadow=''; });
+      cv.remove(); return;
+    }
+    requestAnimationFrame(frame);
+  }
+  window.__df={FR:FR,EN:EN,get alive(){return EN.filter(function(o){return o.alive;}).length;},
+             get kills(){return FR.map(function(f){return f.kills;});},get mode(){return mode;}};
+  window.addEventListener('resize', function(){ size(); measure(); });
+  gs.forEach(function(g){ g.style.textShadow='0 0 16px rgba(0,0,0,.95), 0 2px 5px rgba(0,0,0,.9)'; });
+  requestAnimationFrame(frame);
+})();
+</script>
 </body>
 </html>
 
